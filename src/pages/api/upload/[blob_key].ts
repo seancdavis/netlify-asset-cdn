@@ -23,8 +23,9 @@ export const GET: APIRoute = async ({ params }) => {
   }
 
   const store = getDeployStore("uploads");
-  const imageBlob = await store.get(blob_key);
-  if (!imageBlob) {
+  // Use streaming for best compatibility
+  const imageStream = await store.get(blob_key, { type: "stream" });
+  if (!imageStream) {
     return new Response("Not found", { status: 404 });
   }
 
@@ -42,7 +43,7 @@ export const GET: APIRoute = async ({ params }) => {
   const contentType =
     ext && typeMap[ext] ? typeMap[ext] : "application/octet-stream";
 
-  return new Response(imageBlob, {
+  return new Response(imageStream, {
     headers: { "Content-Type": contentType },
   });
 };
