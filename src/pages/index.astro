@@ -3,7 +3,8 @@ import "../styles/global.css";
 const uploadStatus = Astro.url.searchParams.get("upload");
 import { db } from "../../db/index";
 import { uploads } from "../../db/schema";
-import FileIcon from "lucide-static/icons/file.svg";
+import File from "@lucide/astro/icons/file";
+import Download from "@lucide/astro/icons/download";
 
 // Query all uploads, newest first
 const files = (
@@ -84,7 +85,7 @@ function isImage(filename: string) {
                 />
               ) : (
                 <span class="w-16 h-16 flex items-center justify-center bg-gray-100 rounded text-gray-400">
-                  <FileIcon class="w-8 h-8" />
+                  <File class="w-8 h-8" />
                 </span>
               )}
               <div>
@@ -92,6 +93,12 @@ function isImage(filename: string) {
                 <div class="text-xs text-gray-500">
                   Uploaded at {new Date(file.uploaded_at).toLocaleString()}
                 </div>
+                <a
+                  href={`/api/download/${file.blob_key}`}
+                  download
+                  class="inline-flex items-center gap-1 mt-2 text-blue-700 hover:underline text-sm font-medium transition">
+                  <Download size={16} /> Download
+                </a>
               </div>
             </li>
           ))
