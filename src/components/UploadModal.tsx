@@ -8,9 +8,9 @@ type UploadModalProps = {
 const UploadModal: React.FC<UploadModalProps> = ({ open, onClose }) => {
   if (!open) return null;
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center">
+    <div className="fixed inset-0 z-60 flex items-center justify-center">
       <div
-        className="absolute inset-0 bg-black bg-opacity-40"
+        className="absolute inset-0 bg-black/30 backdrop-blur-sm"
         onClick={onClose}></div>
       <div className="relative bg-white rounded-lg shadow-lg p-8 w-full max-w-md z-10">
         <button

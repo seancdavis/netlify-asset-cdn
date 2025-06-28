@@ -1,8 +1,7 @@
 ---
 import "../styles/global.css";
 import Layout from "../components/Layout.astro";
-import File from "@lucide/astro/icons/file";
-import Download from "@lucide/astro/icons/download";
+import { File, Download } from "lucide-react";
 import { db } from "../../db/index";
 import { uploads } from "../../db/schema";
 import type { Upload } from "../types";
@@ -41,7 +40,7 @@ function isImage(filename: string) {
               />
             ) : (
               <span class="w-16 h-16 flex items-center justify-center bg-gray-100 rounded text-gray-400">
-                <File class="w-8 h-8" />
+                <File className="w-8 h-8" />
               </span>
             )}
             <div>
