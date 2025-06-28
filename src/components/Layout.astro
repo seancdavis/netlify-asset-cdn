@@ -1,5 +1,6 @@
 ---
 import Header from "./Header.astro";
+import UploadStatus from "./UploadStatus.astro";
 ---
 
 <html lang="en">
@@ -13,6 +14,7 @@ import Header from "./Header.astro";
   <body class="min-h-screen bg-gray-50 flex flex-col items-center p-4">
     <Header {...Astro.props} />
     <main class="w-full flex flex-col items-center">
+      <UploadStatus />
       <slot />
     </main>
   </body>
