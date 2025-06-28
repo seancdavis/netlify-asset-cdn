@@ -5,15 +5,14 @@ import File from "@lucide/astro/icons/file";
 import Download from "@lucide/astro/icons/download";
 import { db } from "../../db/index";
 import { uploads } from "../../db/schema";
+import type { Upload } from "../types";
 const uploadStatus = Astro.url.searchParams.get("upload");
 
 // Query all uploads, newest first
-const files = (
-  await db
-    .select()
-    .from(uploads)
-    .orderBy((u) => u.uploaded_at)
-).reverse();
+const files = (await db
+  .select()
+  .from(uploads)
+  .orderBy((u: Upload) => u.uploaded_at)) as Upload[];
 
 // Helper to check if a file is an image
 function isImage(filename: string) {
@@ -32,7 +31,7 @@ function isImage(filename: string) {
         )
       }
       {
-        files.map((file) => (
+        files.map((file: Upload) => (
           <li class="flex items-center gap-4 bg-white p-4 rounded shadow border border-gray-200">
             {isImage(file.filename) ? (
               <img
