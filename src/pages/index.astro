@@ -3,6 +3,7 @@ import "../styles/global.css";
 const uploadStatus = Astro.url.searchParams.get("upload");
 import { db } from "../../db/index";
 import { uploads } from "../../db/schema";
+import FileIcon from "lucide-static/icons/file.svg";
 
 // Query all uploads, newest first
 const files = (
@@ -82,8 +83,8 @@ function isImage(filename: string) {
                   class="w-16 h-16 object-cover rounded"
                 />
               ) : (
-                <span class="w-16 h-16 flex items-center justify-center bg-gray-100 rounded text-3xl text-gray-400">
-                  📄
+                <span class="w-16 h-16 flex items-center justify-center bg-gray-100 rounded text-gray-400">
+                  <FileIcon class="w-8 h-8" />
                 </span>
               )}
               <div>
