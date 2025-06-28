@@ -1,18 +1,7 @@
 ---
-import Header from "./Header.astro";
-import UploadModal from "./UploadModal.astro";
+import Header from "./Header";
 import UploadStatus from "./UploadStatus";
 const uploadStatus = Astro.url.searchParams.get("upload");
-let modalOpen = false;
-function openModal() {
-  modalOpen = true;
-}
-function closeModal() {
-  modalOpen = false;
-}
-function handleUpload() {
-  closeModal();
-}
 ---
 
 <html lang="en">
@@ -24,12 +13,7 @@ function handleUpload() {
     <title>Astro</title>
   </head>
   <body class="min-h-screen bg-gray-50 flex flex-col items-center">
-    <Header onUploadClick={openModal} />
-    <UploadModal
-      open={modalOpen}
-      onClose={closeModal}
-      onUpload={handleUpload}
-    />
+    <Header client:load />
     <div
       class="fixed top-6 left-0 w-full flex justify-center z-50 pointer-events-none"
     >

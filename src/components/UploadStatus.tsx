@@ -21,7 +21,7 @@ const UploadStatus: React.FC<UploadStatusProps> = ({ status }) => {
       </span>
       <button
         type="button"
-        className={`ml-2 text-lg font-bold ${
+        className={`ml-2 text-lg font-bold cursor-pointer ${
           status === "success"
             ? "text-green-800 hover:text-green-900"
             : "text-red-800 hover:text-red-900"
