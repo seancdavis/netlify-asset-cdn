@@ -1,7 +1,8 @@
 ---
 import Header from "./Header.astro";
-import UploadStatus from "./UploadStatus.astro";
 import UploadModal from "./UploadModal.astro";
+import UploadStatus from "./UploadStatus";
+const uploadStatus = Astro.url.searchParams.get("upload");
 let modalOpen = false;
 function openModal() {
   modalOpen = true;
@@ -22,15 +23,22 @@ function handleUpload() {
     <meta name="generator" content={Astro.generator} />
     <title>Astro</title>
   </head>
-  <body class="min-h-screen bg-gray-50 flex flex-col items-center p-4">
+  <body class="min-h-screen bg-gray-50 flex flex-col items-center">
     <Header onUploadClick={openModal} />
     <UploadModal
       open={modalOpen}
       onClose={closeModal}
       onUpload={handleUpload}
     />
-    <main class="w-full flex flex-col items-center">
-      <UploadStatus />
+    <div
+      class="fixed top-6 left-0 w-full flex justify-center z-50 pointer-events-none"
+    >
+      <UploadStatus
+        status={uploadStatus as "success" | "error" | undefined}
+        client:load
+      />
+    </div>
+    <main class="w-full flex flex-col items-center pt-20">
       <slot />
     </main>
   </body>
