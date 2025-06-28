@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 
 type UploadModalProps = {
   open: boolean;
@@ -6,6 +6,15 @@ type UploadModalProps = {
 };
 
 const UploadModal: React.FC<UploadModalProps> = ({ open, onClose }) => {
+  useEffect(() => {
+    if (!open) return;
+    function handleKeyDown(e: KeyboardEvent) {
+      if (e.key === "Escape") onClose();
+    }
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [open, onClose]);
+
   if (!open) return null;
   return (
     <div className="fixed inset-0 z-60 flex items-center justify-center">
