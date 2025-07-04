@@ -19,11 +19,11 @@ to = "/.netlify/images?url=/u/:id&w=:width&h=:height&fit=:fit"
 status = 200
 
 [[redirects]]
-from = "/i/:id/:width/:height/:fit/:format"
-to = "/.netlify/images?url=/u/:id&w=:width&h=:height&fit=:fit&fm=:format"
+from = "/i/:id/:width/:height/:fit/:quality"
+to = "/.netlify/images?url=/u/:id&w=:width&h=:height&fit=:fit&q=:quality"
 status = 200
 
 [[redirects]]
-from = "/i/:id/:width/:height/:fit/:format/:quality"
-to = "/.netlify/images?url=/u/:id&w=:width&h=:height&fit=:fit&fm=:format&q=:quality"
+from = "/i/:id/:width/:height/:fit/:quality/:format"
+to = "/.netlify/images?url=/u/:id&w=:width&h=:height&fit=:fit&q=:quality&fm=:format"
 status = 200

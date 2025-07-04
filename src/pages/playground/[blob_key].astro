@@ -118,7 +118,7 @@ const baseUrl = `${Astro.site ? Astro.site.origin : ""}/i/${blob_key}`;
   const previewImg = document.getElementById("preview-img");
   const copyBtn = document.getElementById("copy-url");
   const feedback = document.getElementById("copy-feedback");
-  const baseUrl = resultUrl?.value || "";
+
   function buildUrl() {
     if (!form || !resultUrl || !previewImg) return;
 
@@ -129,8 +129,9 @@ const baseUrl = `${Astro.site ? Astro.site.origin : ""}/i/${blob_key}`;
     const format = form.elements.fm?.value;
     const quality = form.elements.q?.value;
 
-    // Build path-based URL with logical dependencies
-    let url = baseUrl;
+    // Build path-based URL with defaults
+    const absoluteBaseUrl = `${window.location.origin}/i/${blob_key}`;
+    let url = absoluteBaseUrl;
 
     if (width || height || fit || format || quality) {
       // Width is required for any transformations
@@ -142,22 +143,15 @@ const baseUrl = `${Astro.site ? Astro.site.origin : ""}/i/${blob_key}`;
         if (!height) return;
         url += "/" + height;
 
-        // Fit is required for format and quality
-        if (fit || format || quality) {
-          if (!fit) return;
-          url += "/" + fit;
+        // Use default fit (cover) if quality is set but fit isn't
+        const effectiveFit = fit || (quality ? "cover" : "");
+        if (effectiveFit) url += "/" + effectiveFit;
 
-          // Format is required for quality
-          if (format || quality) {
-            if (!format) return;
-            url += "/" + format;
+        // Quality can be set independently, uses default 75 if not specified
+        if (quality) url += "/" + quality;
 
-            // Quality can only be set if all others are set
-            if (quality) {
-              url += "/" + quality;
-            }
-          }
-        }
+        // Format is optional, only add if explicitly set
+        if (format) url += "/" + format;
       }
     }
 
@@ -178,15 +172,15 @@ const baseUrl = `${Astro.site ? Astro.site.origin : ""}/i/${blob_key}`;
       if (fit.disabled) fit.value = "";
     }
 
-    // Disable format if no width, height, or fit
+    // Disable format if no width or height
     if (format) {
-      format.disabled = !width || !height || !fit?.value;
+      format.disabled = !width || !height;
       if (format.disabled) format.value = "";
     }
 
-    // Disable quality if no width, height, fit, or format
+    // Disable quality if no width or height
     if (quality) {
-      quality.disabled = !width || !height || !fit?.value || !format?.value;
+      quality.disabled = !width || !height;
       if (quality.disabled) quality.value = "";
     }
   }
