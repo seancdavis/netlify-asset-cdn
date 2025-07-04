@@ -1,4 +1,29 @@
 [[redirects]]
-from = "/i/*"
-to = "/.netlify/images?url=/u/:splat"
+from = "/i/:id"
+to = "/.netlify/images?url=/u/:id"
+status = 200
+
+[[redirects]]
+from = "/i/:id/:width"
+to = "/.netlify/images?url=/u/:id&w=:width"
+status = 200
+
+[[redirects]]
+from = "/i/:id/:width/:height"
+to = "/.netlify/images?url=/u/:id&w=:width&h=:height"
+status = 200
+
+[[redirects]]
+from = "/i/:id/:width/:height/:fit"
+to = "/.netlify/images?url=/u/:id&w=:width&h=:height&fit=:fit"
+status = 200
+
+[[redirects]]
+from = "/i/:id/:width/:height/:fit/:format"
+to = "/.netlify/images?url=/u/:id&w=:width&h=:height&fit=:fit&fm=:format"
+status = 200
+
+[[redirects]]
+from = "/i/:id/:width/:height/:fit/:format/:quality"
+to = "/.netlify/images?url=/u/:id&w=:width&h=:height&fit=:fit&fm=:format&q=:quality"
 status = 200
