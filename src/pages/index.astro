@@ -1,10 +1,9 @@
 ---
-import { Download, File, Clipboard } from "lucide-react";
+import { Download, File, Clipboard, Eye } from "lucide-react";
 import { db } from "../../db/index";
 import { uploads } from "../../db/schema";
 import { desc } from "drizzle-orm/sql";
 import Layout from "../components/Layout.astro";
-import "../styles/global.css";
 import type { Upload } from "../types";
 
 // Query all uploads, newest first
@@ -72,6 +71,14 @@ function isViewableInBrowser(filename: string) {
                       Copied!
                     </span>
                   </button>
+                )}
+                {isImage(file.filename) && (
+                  <a
+                    href={`/playground/${file.blob_key}`}
+                    class="inline-flex items-center gap-1 text-blue-700 text-sm font-medium transition cursor-pointer hover:underline">
+                    <Eye size={16} />
+                    <span>Playground</span>
+                  </a>
                 )}
               </div>
             </div>

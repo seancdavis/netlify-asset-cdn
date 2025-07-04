@@ -1,0 +1,145 @@
+---
+import { db } from "../../../db/index";
+import Layout from "../../components/Layout.astro";
+
+const { blob_key } = Astro.params;
+const file = await db.query.uploads.findFirst({
+  where: (u: any, { eq }: any) => eq(u.blob_key, blob_key),
+});
+
+function isImage(filename: string) {
+  return /\.(jpg|jpeg|png|gif|webp|bmp|svg)$/i.test(filename);
+}
+
+if (!file || !isImage(file.filename)) {
+  throw new Error("Not found");
+}
+
+const baseUrl = `${Astro.site ? Astro.site.origin : ""}/i/${blob_key}`;
+---
+
+<Layout>
+  <h1 class="text-2xl font-bold mb-6 text-blue-700">Image Playground</h1>
+  <div class="mb-4">
+    <img
+      id="preview-img"
+      src={`/i/${blob_key}`}
+      alt={file.filename}
+      class="max-w-full max-h-96 rounded border"
+    />
+  </div>
+  <form id="playground-form" class="flex flex-col gap-4 max-w-md">
+    <div class="flex gap-2">
+      <label class="flex flex-col text-sm font-medium">
+        Width
+        <input
+          type="number"
+          name="w"
+          min="1"
+          placeholder="e.g. 400"
+          class="border rounded px-2 py-1"
+        />
+      </label>
+      <label class="flex flex-col text-sm font-medium">
+        Height
+        <input
+          type="number"
+          name="h"
+          min="1"
+          placeholder="e.g. 400"
+          class="border rounded px-2 py-1"
+        />
+      </label>
+    </div>
+    <label class="flex flex-col text-sm font-medium">
+      Fit
+      <select name="fit" class="border rounded px-2 py-1">
+        <option value="">(default)</option>
+        <option value="cover">cover</option>
+        <option value="contain">contain</option>
+        <option value="fill">fill</option>
+      </select>
+    </label>
+    <label class="flex flex-col text-sm font-medium">
+      Format
+      <select name="fm" class="border rounded px-2 py-1">
+        <option value="">(original)</option>
+        <option value="jpg">jpg</option>
+        <option value="png">png</option>
+        <option value="webp">webp</option>
+        <option value="avif">avif</option>
+        <option value="gif">gif</option>
+      </select>
+    </label>
+    <label class="flex flex-col text-sm font-medium">
+      Quality
+      <input
+        type="number"
+        name="q"
+        min="1"
+        max="100"
+        placeholder="e.g. 80"
+        class="border rounded px-2 py-1"
+      />
+    </label>
+  </form>
+  <div class="mt-6 flex flex-col gap-2">
+    <label class="text-sm font-medium">Resulting URL</label>
+    <div class="flex items-center gap-2">
+      <input
+        id="result-url"
+        type="text"
+        readonly
+        class="w-full border rounded px-2 py-1 text-xs"
+        value={baseUrl}
+      />
+      <button
+        id="copy-url"
+        type="button"
+        class="px-3 py-1 bg-blue-600 text-white rounded text-xs font-medium cursor-pointer"
+        >Copy</button
+      >
+      <span id="copy-feedback" class="text-green-600 text-xs hidden"
+        >Copied!</span
+      >
+    </div>
+  </div>
+  <script>
+    const form = document.getElementById(
+      "playground-form"
+    ) as HTMLFormElement | null;
+    const resultUrl = document.getElementById(
+      "result-url"
+    ) as HTMLInputElement | null;
+    const previewImg = document.getElementById(
+      "preview-img"
+    ) as HTMLImageElement | null;
+    const copyBtn = document.getElementById(
+      "copy-url"
+    ) as HTMLButtonElement | null;
+    const feedback = document.getElementById(
+      "copy-feedback"
+    ) as HTMLSpanElement | null;
+    const baseUrl = resultUrl?.value || "";
+    function buildUrl() {
+      if (!form || !resultUrl || !previewImg) return;
+      const params = new URLSearchParams();
+      for (const el of Array.from(form.elements) as
+        | HTMLInputElement[]
+        | HTMLSelectElement[]) {
+        if (el.name && el.value) params.set(el.name, el.value);
+      }
+      const url = params.toString() ? `${baseUrl}?${params}` : baseUrl;
+      resultUrl.value = url;
+      previewImg.src = url;
+    }
+    if (form) form.addEventListener("input", buildUrl);
+    if (copyBtn && resultUrl && feedback) {
+      copyBtn.addEventListener("click", () => {
+        navigator.clipboard.writeText(resultUrl.value);
+        feedback.classList.remove("hidden");
+        setTimeout(() => feedback.classList.add("hidden"), 1200);
+      });
+    }
+  </script>
+</Layout>
