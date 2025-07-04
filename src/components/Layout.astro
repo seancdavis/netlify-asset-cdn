@@ -25,5 +25,14 @@ const uploadStatus = Astro.url.searchParams.get("upload");
     <main class="w-full flex flex-col items-center pt-20">
       <slot />
     </main>
+    <script>
+      if (typeof window !== "undefined") {
+        const url = new URL(window.location.href);
+        if (url.searchParams.has("upload")) {
+          url.searchParams.delete("upload");
+          window.history.replaceState({}, "", url.pathname + url.search);
+        }
+      }
+    </script>
   </body>
 </html>
