@@ -1,10 +1,10 @@
 ---
-import { ilike } from "drizzle-orm";
+import { ilike, or } from "drizzle-orm";
 import { Search as SearchIcon } from "lucide-react";
 import { db } from "../../db/index";
 import { uploads } from "../../db/schema";
-import AssetList from "../components/AssetList";
 import Layout from "../components/Layout.astro";
+import TagUpdateHandler from "../components/TagUpdateHandler";
 import type { Upload } from "../types";
 
 // Get search query from URL
@@ -18,7 +18,12 @@ if (query.trim() !== "") {
   const results = await db
     .select()
     .from(uploads)
-    .where(ilike(uploads.filename, `%${query}%`))
+    .where(
+      or(
+        ilike(uploads.filename, `%${query}%`),
+        ilike(uploads.tags, `%${query}%`)
+      )
+    )
     .limit(100);
 
   files = results as Upload[];
@@ -54,7 +59,7 @@ if (query.trim() !== "") {
             </p>
           </li>
         ) : (
-          <AssetList
+          <TagUpdateHandler
             client:load
             files={files}
             emptyMessage="No files match your search."

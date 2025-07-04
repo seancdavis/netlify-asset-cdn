@@ -1,13 +1,18 @@
-import { Clipboard, Download, Eye, File } from "lucide-react";
-import React, { useState } from "react";
+import { Clipboard, Download, Edit2, Eye, File, Save, X } from "lucide-react";
+import React, { useEffect, useRef, useState } from "react";
 import type { Upload } from "../types";
+import TagInput from "./TagInput";
 
 interface AssetItemProps {
   file: Upload;
+  onTagsUpdate?: (blobKey: string, tags: string) => void;
 }
 
-const AssetItem: React.FC<AssetItemProps> = ({ file }) => {
+const AssetItem: React.FC<AssetItemProps> = ({ file, onTagsUpdate }) => {
   const [copied, setCopied] = useState(false);
+  const [isEditingTags, setIsEditingTags] = useState(false);
+  const [currentTags, setCurrentTags] = useState(file.tags || "");
+  const tagInputRef = useRef<HTMLInputElement>(null);
 
   // Helper to check if a file is an image
   const isImage = (filename: string) => {
@@ -31,8 +36,41 @@ const AssetItem: React.FC<AssetItemProps> = ({ file }) => {
     setTimeout(() => setCopied(false), 1200);
   };
 
+  const handleSaveTags = async () => {
+    if (onTagsUpdate) {
+      await onTagsUpdate(file.blob_key, currentTags);
+    }
+    setIsEditingTags(false);
+  };
+
+  const handleCancelEdit = () => {
+    setCurrentTags(file.tags || "");
+    setIsEditingTags(false);
+  };
+
+  const handleStartEdit = () => {
+    setIsEditingTags(true);
+  };
+
+  // Focus the input when editing starts
+  useEffect(() => {
+    if (isEditingTags && tagInputRef.current) {
+      // Small delay to ensure the input is rendered
+      setTimeout(() => {
+        tagInputRef.current?.focus();
+      }, 100);
+    }
+  }, [isEditingTags]);
+
+  const tagArray = file.tags
+    ? file.tags
+        .split(",")
+        .map((tag) => tag.trim())
+        .filter((tag) => tag)
+    : [];
+
   return (
-    <li className="flex items-center gap-4 bg-white p-4 rounded shadow border border-gray-200">
+    <li className="flex items-start gap-4 bg-white p-4 rounded shadow border border-gray-200">
       {isImage(file.filename) ? (
         <img
           src={`/api/upload/${file.blob_key}`}
@@ -44,11 +82,65 @@ const AssetItem: React.FC<AssetItemProps> = ({ file }) => {
           <File className="w-8 h-8" />
         </span>
       )}
-      <div>
+      <div className="flex-1">
         <div className="font-medium">{file.filename}</div>
         <div className="text-xs text-gray-500">
           Uploaded at {new Date(file.uploaded_at).toLocaleString()}
         </div>
+
+        {/* Tags Section */}
+        <div className="mt-2">
+          {isEditingTags ? (
+            <div className="space-y-2">
+              <TagInput
+                ref={tagInputRef}
+                tags={currentTags}
+                onTagsChange={setCurrentTags}
+                placeholder="Add tags..."
+              />
+              <div className="flex gap-2">
+                <button
+                  type="button"
+                  onClick={handleSaveTags}
+                  className="inline-flex items-center gap-1 text-green-700 text-sm font-medium hover:underline">
+                  <Save size={14} />
+                  Save
+                </button>
+                <button
+                  type="button"
+                  onClick={handleCancelEdit}
+                  className="inline-flex items-center gap-1 text-gray-600 text-sm font-medium hover:underline">
+                  <X size={14} />
+                  Cancel
+                </button>
+              </div>
+            </div>
+          ) : (
+            <div className="flex items-center gap-2">
+              {tagArray.length > 0 ? (
+                <div className="flex flex-wrap gap-1">
+                  {tagArray.map((tag, index) => (
+                    <span
+                      key={index}
+                      className="inline-block bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded-full">
+                      {tag}
+                    </span>
+                  ))}
+                </div>
+              ) : (
+                <span className="text-gray-400 text-sm">No tags</span>
+              )}
+              <button
+                type="button"
+                onClick={handleStartEdit}
+                className="inline-flex items-center gap-1 text-blue-700 text-sm font-medium hover:underline">
+                <Edit2 size={14} />
+                Edit
+              </button>
+            </div>
+          )}
+        </div>
+
         <div className="flex items-center gap-6 mt-2">
           <a
             href={`/api/download/${file.blob_key}`}

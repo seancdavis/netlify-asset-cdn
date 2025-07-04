@@ -2,8 +2,8 @@
 import { desc } from "drizzle-orm/sql";
 import { db } from "../../db/index";
 import { uploads } from "../../db/schema";
-import AssetList from "../components/AssetList";
 import Layout from "../components/Layout.astro";
+import TagUpdateHandler from "../components/TagUpdateHandler";
 import type { Upload } from "../types";
 
 // Query all uploads, newest first
@@ -22,7 +22,7 @@ const files = (await db
         files.length === 0 ? (
           <li class="text-gray-500">No files uploaded yet.</li>
         ) : (
-          <AssetList client:load files={files} />
+          <TagUpdateHandler client:load files={files} />
         )
       }
     </ul>

@@ -1,4 +1,5 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
+import TagInput from "./TagInput";
 
 type UploadModalProps = {
   open: boolean;
@@ -6,6 +7,8 @@ type UploadModalProps = {
 };
 
 const UploadModal: React.FC<UploadModalProps> = ({ open, onClose }) => {
+  const [tags, setTags] = useState("");
+
   useEffect(() => {
     if (!open) return;
     function handleKeyDown(e: KeyboardEvent) {
@@ -14,6 +17,27 @@ const UploadModal: React.FC<UploadModalProps> = ({ open, onClose }) => {
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
   }, [open, onClose]);
+
+  const handleSubmit = (e: React.FormEvent) => {
+    // Add tags to form data before submission
+    const form = e.target as HTMLFormElement;
+    const formData = new FormData(form);
+    formData.append("tags", tags);
+
+    // Submit the form with the updated data
+    fetch("/api/upload", {
+      method: "POST",
+      body: formData,
+    }).then((response) => {
+      if (response.ok) {
+        onClose();
+        setTags("");
+        window.location.reload();
+      }
+    });
+
+    e.preventDefault();
+  };
 
   if (!open) return null;
   return (
@@ -31,8 +55,7 @@ const UploadModal: React.FC<UploadModalProps> = ({ open, onClose }) => {
         </button>
         <h2 className="text-xl font-semibold mb-4">Upload a File</h2>
         <form
-          action="/api/upload"
-          method="post"
+          onSubmit={handleSubmit}
           encType="multipart/form-data"
           className="flex flex-col gap-4">
           <label htmlFor="file" className="font-medium text-gray-700">
@@ -45,6 +68,18 @@ const UploadModal: React.FC<UploadModalProps> = ({ open, onClose }) => {
             required
             className="file:mr-4 file:py-2 file:px-4 file:rounded file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
           />
+
+          <div>
+            <label className="font-medium text-gray-700 block mb-2">
+              Tags (optional):
+            </label>
+            <TagInput
+              tags={tags}
+              onTagsChange={setTags}
+              placeholder="Add tags for this file..."
+            />
+          </div>
+
           <button
             type="submit"
             className="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded transition">

@@ -1,5 +1,5 @@
-import type { APIRoute } from "astro";
 import { getDeployStore } from "@netlify/blobs";
+import type { APIRoute } from "astro";
 import { db } from "../../../db/index";
 import { uploads } from "../../../db/schema";
 
@@ -15,6 +15,7 @@ function uuidv4() {
 export const POST: APIRoute = async ({ request }) => {
   const formData = await request.formData();
   const file = formData.get("file");
+  const tags = (formData.get("tags") as string) || "";
 
   // Get the origin from the request URL
   const url = new URL(request.url);
@@ -33,7 +34,11 @@ export const POST: APIRoute = async ({ request }) => {
     const store = getDeployStore("uploads");
     await store.set(blobKey, file);
     // Store a record in the database
-    await db.insert(uploads).values({ filename, blob_key: blobKey });
+    await db.insert(uploads).values({
+      filename,
+      blob_key: blobKey,
+      tags: tags.trim(),
+    });
     return Response.redirect(`${origin}/?upload=success`, 303);
   } catch (err) {
     return Response.redirect(`${origin}/?upload=error`, 303);

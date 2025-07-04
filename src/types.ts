@@ -4,4 +4,5 @@ export type Upload = {
   blob_key: string;
   uploaded_at: Date | string;
   metadata: string;
+  tags: string;
 };

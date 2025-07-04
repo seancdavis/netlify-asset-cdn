@@ -7,12 +7,14 @@ interface AssetListProps {
   files: Upload[];
   emptyMessage?: string;
   emptySubMessage?: string;
+  onTagsUpdate?: (blobKey: string, tags: string) => void;
 }
 
 const AssetList: React.FC<AssetListProps> = ({
   files,
   emptyMessage = "No files found",
   emptySubMessage = "Try a different search term",
+  onTagsUpdate,
 }) => {
   if (files.length === 0) {
     return (
@@ -28,7 +30,7 @@ const AssetList: React.FC<AssetListProps> = ({
     <>
       {files.map((file: Upload, index: number) => (
         <div key={file.blob_key} className={index > 0 ? "mt-4" : ""}>
-          <AssetItem file={file} />
+          <AssetItem file={file} onTagsUpdate={onTagsUpdate} />
         </div>
       ))}
     </>

@@ -1,5 +1,5 @@
 import type { APIRoute } from "astro";
-import { ilike } from "drizzle-orm";
+import { ilike, or } from "drizzle-orm";
 import { db } from "../../../db/index";
 import { uploads } from "../../../db/schema";
 
@@ -17,11 +17,16 @@ export const GET: APIRoute = async ({ url }) => {
       });
     }
 
-    // Search for files with filename containing the query (case-insensitive)
+    // Search for files with filename OR tags containing the query (case-insensitive)
     const results = await db
       .select()
       .from(uploads)
-      .where(ilike(uploads.filename, `%${query}%`))
+      .where(
+        or(
+          ilike(uploads.filename, `%${query}%`),
+          ilike(uploads.tags, `%${query}%`)
+        )
+      )
       .limit(100);
 
     return new Response(JSON.stringify({ files: results }), {

@@ -1,9 +1,9 @@
 import {
   integer,
   pgTable,
-  varchar,
   text,
   timestamp,
+  varchar,
 } from "drizzle-orm/pg-core";
 
 export const posts = pgTable("posts", {
@@ -18,4 +18,5 @@ export const uploads = pgTable("uploads", {
   blob_key: varchar({ length: 255 }).notNull(),
   uploaded_at: timestamp().notNull().defaultNow(),
   metadata: text().default(""),
+  tags: text().default(""),
 });
