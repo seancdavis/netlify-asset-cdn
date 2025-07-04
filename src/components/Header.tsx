@@ -31,7 +31,12 @@ const Header: React.FC<HeaderProps> = ({ initialSearchQuery = "" }) => {
       // Only trigger if not already typing in an input
       if (e.key === "/" && document.activeElement?.tagName !== "INPUT") {
         e.preventDefault();
-        searchInputRef.current?.focus();
+        const input = searchInputRef.current;
+        if (input) {
+          input.focus();
+          // Move cursor to the end of the value
+          input.setSelectionRange(input.value.length, input.value.length);
+        }
       }
     };
 
