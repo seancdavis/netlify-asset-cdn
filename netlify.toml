@@ -1,0 +1,4 @@
+[[redirects]]
+from = "/i/*"
+to = "/.netlify/images?url=/u/:splat"
+status = 200

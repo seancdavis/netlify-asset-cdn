@@ -63,9 +63,14 @@ function isViewableInBrowser(filename: string) {
                 {isViewableInBrowser(file.filename) && (
                   <button
                     type="button"
-                    class="inline-flex items-center gap-1 text-blue-700 hover:underline text-sm font-medium transition copy-link-btn"
-                    data-link={`${globalThis?.location?.origin || ""}/u/${file.blob_key}`}>
-                    <Clipboard size={16} /> Copy Link
+                    class="inline-flex items-center gap-1 text-blue-700 text-sm font-medium transition copy-link-btn cursor-pointer"
+                    data-blob-key={file.blob_key}
+                    data-is-image={isImage(file.filename) ? "true" : "false"}>
+                    <Clipboard size={16} />
+                    <span class="hover:underline">Copy Link</span>
+                    <span class="copy-feedback ml-2 text-green-600 text-xs hidden no-underline">
+                      Copied!
+                    </span>
                   </button>
                 )}
               </div>
@@ -80,10 +85,18 @@ function isViewableInBrowser(filename: string) {
 <script>
   document.addEventListener("DOMContentLoaded", () => {
     document.querySelectorAll(".copy-link-btn").forEach((btn) => {
-      btn.addEventListener("click", () => {
-        const link = btn.getAttribute("data-link");
-        if (link) {
-          navigator.clipboard.writeText(link);
+      btn.addEventListener("click", function () {
+        const blobKey = btn.getAttribute("data-blob-key");
+        const isImage = btn.getAttribute("data-is-image") === "true";
+        const origin = window.location.origin;
+        const path = isImage ? `/i/${blobKey}` : `/u/${blobKey}`;
+        const url = origin + path;
+        navigator.clipboard.writeText(url);
+        // Show feedback
+        const feedback = btn.querySelector(".copy-feedback");
+        if (feedback) {
+          feedback.classList.remove("hidden");
+          setTimeout(() => feedback.classList.add("hidden"), 1200);
         }
       });
     });
