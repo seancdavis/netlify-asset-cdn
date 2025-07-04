@@ -1,7 +1,6 @@
-import type { APIRoute } from "astro";
 import { getDeployStore } from "@netlify/blobs";
+import type { APIRoute } from "astro";
 import { db } from "../../../../db/index";
-import { uploads } from "../../../../db/schema";
 
 export const GET: APIRoute = async ({ params }) => {
   const blob_key = params.blob_key;

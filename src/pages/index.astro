@@ -1,11 +1,10 @@
 ---
-import "../styles/global.css";
-import Layout from "../components/Layout.astro";
-import { File, Download } from "lucide-react";
+import { Download, File } from "lucide-react";
 import { db } from "../../db/index";
 import { uploads } from "../../db/schema";
+import Layout from "../components/Layout.astro";
+import "../styles/global.css";
 import type { Upload } from "../types";
-const uploadStatus = Astro.url.searchParams.get("upload");
 
 // Query all uploads, newest first
 const files = (await db
