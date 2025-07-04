@@ -56,6 +56,14 @@ const AssetItem: React.FC<AssetItemProps> = ({ file }) => {
             className="inline-flex items-center gap-1 text-blue-700 hover:underline text-sm font-medium transition">
             <Download size={16} /> Download
           </a>
+          {isImage(file.filename) && (
+            <a
+              href={`/playground/${file.blob_key}`}
+              className="inline-flex items-center gap-1 text-blue-700 text-sm font-medium transition cursor-pointer hover:underline">
+              <Eye size={16} />
+              <span>Playground</span>
+            </a>
+          )}
           {isViewableInBrowser(file.filename) && (
             <button
               type="button"
@@ -69,14 +77,6 @@ const AssetItem: React.FC<AssetItemProps> = ({ file }) => {
                 </span>
               )}
             </button>
-          )}
-          {isImage(file.filename) && (
-            <a
-              href={`/playground/${file.blob_key}`}
-              className="inline-flex items-center gap-1 text-blue-700 text-sm font-medium transition cursor-pointer hover:underline">
-              <Eye size={16} />
-              <span>Playground</span>
-            </a>
           )}
         </div>
       </div>
