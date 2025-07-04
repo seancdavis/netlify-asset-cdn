@@ -2,6 +2,7 @@
 import { Download, File, Clipboard } from "lucide-react";
 import { db } from "../../db/index";
 import { uploads } from "../../db/schema";
+import { desc } from "drizzle-orm/sql";
 import Layout from "../components/Layout.astro";
 import "../styles/global.css";
 import type { Upload } from "../types";
@@ -10,7 +11,8 @@ import type { Upload } from "../types";
 const files = (await db
   .select()
   .from(uploads)
-  .orderBy((u: Upload) => u.uploaded_at)) as Upload[];
+  .orderBy(desc(uploads.uploaded_at))
+  .limit(10)) as Upload[];
 
 // Helper to check if a file is an image
 function isImage(filename: string) {
@@ -25,7 +27,7 @@ function isViewableInBrowser(filename: string) {
 <Layout>
   <h1 class="text-4xl font-bold mb-8 text-blue-700 mt-8">Astro Asset Upload</h1>
   <section class="mt-10 w-full max-w-2xl">
-    <h2 class="text-2xl font-semibold mb-4">Uploaded Files</h2>
+    <h2 class="text-2xl font-semibold mb-4">Recent Uploads</h2>
     <ul class="space-y-4">
       {
         files.length === 0 && (
