@@ -1,14 +1,9 @@
 ---
-import {
-  Download,
-  File,
-  Clipboard,
-  Eye,
-  Search as SearchIcon,
-} from "lucide-react";
+import { ilike } from "drizzle-orm";
+import { Search as SearchIcon } from "lucide-react";
 import { db } from "../../db/index";
 import { uploads } from "../../db/schema";
-import { ilike } from "drizzle-orm";
+import AssetList from "../components/AssetList";
 import Layout from "../components/Layout.astro";
 import type { Upload } from "../types";
 
@@ -28,15 +23,6 @@ if (query.trim() !== "") {
 
   files = results as Upload[];
   totalResults = results.length;
-}
-
-// Helper to check if a file is an image
-function isImage(filename: string) {
-  return /\.(jpg|jpeg|png|gif|webp|bmp|svg)$/i.test(filename);
-}
-
-function isViewableInBrowser(filename: string) {
-  return /\.(jpg|jpeg|png|gif|webp|bmp|svg|pdf|txt|md|csv)$/i.test(filename);
 }
 ---
 
@@ -67,89 +53,15 @@ function isViewableInBrowser(filename: string) {
               Enter a search term in the header to find files
             </p>
           </li>
-        ) : files.length === 0 ? (
-          <li class="text-gray-500 bg-white p-8 rounded shadow border border-gray-200 text-center">
-            <SearchIcon className="w-12 h-12 mx-auto mb-4 text-gray-300" />
-            <p>No files match your search.</p>
-            <p class="text-sm text-gray-400 mt-2">
-              Try a different search term
-            </p>
-          </li>
         ) : (
-          files.map((file: Upload) => (
-            <li class="flex items-center gap-4 bg-white p-4 rounded shadow border border-gray-200">
-              {isImage(file.filename) ? (
-                <img
-                  src={`/api/upload/${file.blob_key}`}
-                  alt={file.filename}
-                  class="w-16 h-16 object-cover rounded"
-                />
-              ) : (
-                <span class="w-16 h-16 flex items-center justify-center bg-gray-100 rounded text-gray-400">
-                  <File className="w-8 h-8" />
-                </span>
-              )}
-              <div>
-                <div class="font-medium">{file.filename}</div>
-                <div class="text-xs text-gray-500">
-                  Uploaded at {new Date(file.uploaded_at).toLocaleString()}
-                </div>
-                <div class="flex items-center gap-6 mt-2">
-                  <a
-                    href={`/api/download/${file.blob_key}`}
-                    download
-                    class="inline-flex items-center gap-1 text-blue-700 hover:underline text-sm font-medium transition">
-                    <Download size={16} /> Download
-                  </a>
-                  {isViewableInBrowser(file.filename) && (
-                    <button
-                      type="button"
-                      class="inline-flex items-center gap-1 text-blue-700 text-sm font-medium transition copy-link-btn cursor-pointer"
-                      data-blob-key={file.blob_key}
-                      data-is-image={isImage(file.filename) ? "true" : "false"}>
-                      <Clipboard size={16} />
-                      <span class="hover:underline">Copy Link</span>
-                      <span class="copy-feedback ml-2 text-green-600 text-xs hidden no-underline">
-                        Copied!
-                      </span>
-                    </button>
-                  )}
-                  {isImage(file.filename) && (
-                    <a
-                      href={`/playground/${file.blob_key}`}
-                      class="inline-flex items-center gap-1 text-blue-700 text-sm font-medium transition cursor-pointer hover:underline">
-                      <Eye size={16} />
-                      <span>Playground</span>
-                    </a>
-                  )}
-                </div>
-              </div>
-            </li>
-          ))
+          <AssetList
+            client:load
+            files={files}
+            emptyMessage="No files match your search."
+            emptySubMessage="Try a different search term"
+          />
         )
       }
     </ul>
-    ) }
   </section>
 </Layout>
-
-<script>
-  document.addEventListener("DOMContentLoaded", () => {
-    document.querySelectorAll(".copy-link-btn").forEach((btn) => {
-      btn.addEventListener("click", function () {
-        const blobKey = btn.getAttribute("data-blob-key");
-        const isImage = btn.getAttribute("data-is-image") === "true";
-        const origin = window.location.origin;
-        const path = isImage ? `/i/${blobKey}` : `/u/${blobKey}`;
-        const url = origin + path;
-        navigator.clipboard.writeText(url);
-        // Show feedback
-        const feedback = btn.querySelector(".copy-feedback");
-        if (feedback) {
-          feedback.classList.remove("hidden");
-          setTimeout(() => feedback.classList.add("hidden"), 1200);
-        }
-      });
-    });
-  });
-</script>
