@@ -45,9 +45,12 @@ if (query.trim() !== "") {
   files = results;
   totalResults = results.length;
 }
+
+// Generate page title based on search query
+const pageTitle = query ? `Search: ${query}` : "Search";
 ---
 
-<Layout>
+<Layout title={pageTitle}>
   <section class="mt-10 w-full max-w-2xl">
     <div class="mb-6">
       <h2 class="text-2xl font-semibold mb-2">Search Results</h2>
