@@ -143,12 +143,14 @@ const baseUrl = `${Astro.site ? Astro.site.origin : ""}/i/${blob_key}`;
         if (!height) return;
         url += "/" + height;
 
-        // Use default fit (cover) if quality is set but fit isn't
-        const effectiveFit = fit || (quality ? "cover" : "");
+        // Use default fit (cover) if quality or format is set but fit isn't
+        const effectiveFit = fit || (quality || format ? "cover" : "");
         if (effectiveFit) url += "/" + effectiveFit;
 
         // Quality can be set independently, uses default 75 if not specified
-        if (quality) url += "/" + quality;
+        // Also include default quality when format is set
+        const effectiveQuality = quality || (format ? "75" : "");
+        if (effectiveQuality) url += "/" + effectiveQuality;
 
         // Format is optional, only add if explicitly set
         if (format) url += "/" + format;
