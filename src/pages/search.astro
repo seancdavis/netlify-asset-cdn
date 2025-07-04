@@ -15,18 +15,34 @@ let files: Upload[] = [];
 let totalResults = 0;
 
 if (query.trim() !== "") {
-  const results = await db
-    .select()
-    .from(uploads)
-    .where(
-      or(
-        ilike(uploads.filename, `%${query}%`),
-        ilike(uploads.tags, `%${query}%`)
-      )
-    )
-    .limit(100);
+  let results: Upload[] = [];
 
-  files = results as Upload[];
+  // Check if query starts with "tag:" for tag-specific search
+  if (query.startsWith("tag:")) {
+    const tagQuery = query.substring(4).trim(); // Remove "tag:" prefix
+    if (tagQuery) {
+      // Search only in tags, not in filenames
+      results = (await db
+        .select()
+        .from(uploads)
+        .where(ilike(uploads.tags, `%${tagQuery}%`))
+        .limit(100)) as Upload[];
+    }
+  } else {
+    // Regular search in both filename and tags
+    results = (await db
+      .select()
+      .from(uploads)
+      .where(
+        or(
+          ilike(uploads.filename, `%${query}%`),
+          ilike(uploads.tags, `%${query}%`)
+        )
+      )
+      .limit(100)) as Upload[];
+  }
+
+  files = results;
   totalResults = results.length;
 }
 ---
@@ -46,6 +62,13 @@ if (query.trim() !== "") {
             : "Enter a search term to find files"
         }
       </p>
+      {
+        query.startsWith("tag:") && (
+          <p class="text-sm text-blue-600 mt-1">
+            Searching only in tags (use "tag:your-tag" to search specific tags)
+          </p>
+        )
+      }
     </div>
 
     <ul class="space-y-4">

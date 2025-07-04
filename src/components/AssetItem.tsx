@@ -52,6 +52,11 @@ const AssetItem: React.FC<AssetItemProps> = ({ file, onTagsUpdate }) => {
     setIsEditingTags(true);
   };
 
+  const handleTagClick = (tag: string) => {
+    // Navigate to search page with tag-specific query
+    window.location.href = `/search?q=tag:${encodeURIComponent(tag)}`;
+  };
+
   // Focus the input when editing starts
   useEffect(() => {
     if (isEditingTags && tagInputRef.current) {
@@ -120,11 +125,14 @@ const AssetItem: React.FC<AssetItemProps> = ({ file, onTagsUpdate }) => {
               {tagArray.length > 0 ? (
                 <div className="flex flex-wrap gap-1">
                   {tagArray.map((tag, index) => (
-                    <span
+                    <button
                       key={index}
-                      className="inline-block bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded-full">
+                      type="button"
+                      onClick={() => handleTagClick(tag)}
+                      className="inline-block bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded-full hover:bg-blue-200 transition-colors cursor-pointer"
+                      title={`Search for files tagged with "${tag}"`}>
                       {tag}
-                    </span>
+                    </button>
                   ))}
                 </div>
               ) : (
