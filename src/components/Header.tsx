@@ -2,18 +2,27 @@ import { Search, Upload } from "lucide-react";
 import React, { useEffect, useRef, useState } from "react";
 import UploadModal from "./UploadModal";
 
-const Header: React.FC = () => {
+interface HeaderProps {
+  initialSearchQuery?: string;
+}
+
+const Header: React.FC<HeaderProps> = ({ initialSearchQuery = "" }) => {
   const [modalOpen, setModalOpen] = useState(false);
-  const [searchQuery, setSearchQuery] = useState("");
+  const [searchQuery, setSearchQuery] = useState(initialSearchQuery);
   const searchInputRef = useRef<HTMLInputElement>(null);
 
-  // Get initial search query from URL if on search page
+  // Update search query when URL changes (for client-side navigation)
   useEffect(() => {
-    const urlParams = new URLSearchParams(window.location.search);
-    const query = urlParams.get("q");
-    if (query) {
+    const handleUrlChange = () => {
+      const urlParams = new URLSearchParams(window.location.search);
+      const query = urlParams.get("q") || "";
       setSearchQuery(query);
-    }
+    };
+
+    // Listen for popstate events (back/forward navigation)
+    window.addEventListener("popstate", handleUrlChange);
+
+    return () => window.removeEventListener("popstate", handleUrlChange);
   }, []);
 
   // Keyboard shortcut: slash key focuses search
